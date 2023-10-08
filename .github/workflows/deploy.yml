@@ -1,23 +1,25 @@
-name: Firebase Deploy
+name: Deploy React App to Firebase
 
 on:
   push:
-    branches: 
-    - main
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build React app
+        run: npm run build
+
+      - name: Deploy to Firebase
+        uses: google-github-actions/firebase-hosting@v1
         with:
-          node-version: '18'
-      - run: npm ci
-      - run: npm run build
-      - name: GitHub Action for Firebase
-        uses: w9jds/firebase-action@v1.5.0
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEST_REACT_REPO }}
+          firebase-token: ${{ secrets.FIREBASE_TOKEN }}
+          public-dir: dist
